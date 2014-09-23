@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<header>
+		<result forceReloadCheck="true">
+		</result>
+	</header>
+	<xml fileName="properties.xml" config-name="properties" autoSave="true"
+		config-optional="true">
+		<reloadingStrategy refreshDelay="100"
+			config-class="org.apache.commons.configuration.reloading.FileChangedReloadingStrategy" />
+	</xml>
+</configuration>

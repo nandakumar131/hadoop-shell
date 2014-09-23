@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<commands>
+
+	<command>
+		<name>ls</name>
+		<class>com.ericsson.hadoop.shell.command.LSCommand</class>
+		<description>Clears the console</description>
+	</command>
+
+	<command>
+		<name>pwd</name>
+		<class>com.ericsson.hadoop.shell.command.PWDCommand</class>
+		<description>Clears the console</description>
+	</command>
+
+	<command>
+		<name>cd</name>
+		<class>com.ericsson.hadoop.shell.command.CDCommand</class>
+		<description>Clears the console</description>
+	</command>
+
+	<command>
+		<name>cat</name>
+		<class>com.ericsson.hadoop.shell.command.CatCommand</class>
+		<description>Clears the console</description>
+	</command>
+	
+	<command>
+		<name>count</name>
+		<class>com.ericsson.hadoop.shell.command.CountCommand</class>
+		<description>Prints the line count of file</description>
+	</command>
+
+	<command>
+		<name>clear</name>
+		<class>com.ericsson.hadoop.shell.command.ClearCommand</class>
+		<description>Clears the console</description>
+	</command>
+
+	<command>
+		<name>exit</name>
+		<class>com.ericsson.hadoop.shell.command.ExitCommand</class>
+		<description>Exit Hadoop Shell</description>
+	</command>
+
+	<command>
+		<name>help</name>
+		<class>com.ericsson.hadoop.shell.command.HelpCommand</class>
+		<description>Prints help message</description>
+	</command>
+	
+	<command>
+		<name>echo</name>
+		<class>com.ericsson.hadoop.shell.command.EchoCommand</class>
+		<description>Display a line of text</description>
+	</command>
+
+	<!--command>
+		<name>getConfig</name>
+		<class>com.ericsson.hadoop.shell.command.GetConfigCommand</class>
+		<description></description>
+	</command>
+
+	<command>
+		<name>setConfig</name>
+		<class>com.ericsson.hadoop.shell.command.SetConfigCommand</class>
+		<description></description>
+	</command-->
+
+</commands>

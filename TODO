@@ -1,0 +1,14 @@
+Logging
+Write a avro wrapper
+Implement "more"
+Introduce "vi"
+"jobs" command
+"kill" command for jobs
+job list completor
+copyFromLocal
+copyToLocal
+handle ctrl+C signal
+man page
+option to execute local shell commands
+socks proxy configuration in java code
+Input and Output stream handling

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<property> 
+		<name>fs.default.name</name>
+		<value>127.0.0.1:9000</value> 
+	</property>
+	<property>
+		<name>dfs.client.use.legacy.blockreader</name>
+		<value>true</value>
+	</property>
+</configuration>
