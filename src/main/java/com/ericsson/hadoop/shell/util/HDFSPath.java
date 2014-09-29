@@ -20,8 +20,7 @@ public class HDFSPath {
 	}
 
 	public static boolean isAbsolutePath(String path) {
-		//TODO: change it to file seperator
-		return path.startsWith("/");
+		return path.startsWith(File.separator);
 	}
 
 }

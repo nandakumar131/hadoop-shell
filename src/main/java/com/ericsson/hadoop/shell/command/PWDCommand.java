@@ -3,18 +3,16 @@ package com.ericsson.hadoop.shell.command;
 import jline.Completor;
 import jline.NullCompletor;
 
-import com.ericsson.hadoop.shell.environment.HShellEnv;
+import com.ericsson.hadoop.shell.exception.CommandExecutionException;
 import com.ericsson.hadoop.shell.util.ExitCode;
 
-public class PWDCommand implements Command {
+public class PWDCommand extends AbstractHDFSCommand {
 
 	private final String COMMAND_SYNTAX = "pwd";
 
 	public static final String NAME = "pwd";
-	private static final HShellEnv env = HShellEnv.getInstance();
 
-	@Override
-	public int execute(String... arguments) {
+	public int execute(String... arguments) throws CommandExecutionException {
 		System.out.println(env.getPWD());
 		return ExitCode.SUCCESS;
 	}
@@ -28,7 +26,6 @@ public class PWDCommand implements Command {
 		return COMMAND_SYNTAX;
 	}
 
-	@Override
 	public String help() {
 		return new String(String.format("%-10s", COMMAND_SYNTAX)
 				+ "- Print name of current/working directory");

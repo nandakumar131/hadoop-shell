@@ -7,6 +7,7 @@ import jline.Completor;
 import jline.SimpleCompletor;
 
 import com.ericsson.hadoop.shell.configuration.Configuration;
+import com.ericsson.hadoop.shell.exception.CommandExecutionException;
 import com.ericsson.hadoop.shell.util.ExitCode;
 
 public class GetConfigCommand implements Command {
@@ -15,8 +16,7 @@ public class GetConfigCommand implements Command {
 
 	Configuration conf = Configuration.getInstance();
 
-	@Override
-	public int execute(String... arguments) {
+	public int execute(String... arguments) throws CommandExecutionException {
 		int exitCode = ExitCode.SUCCESS;
 		try {
 			System.out.println(conf.getProperty(arguments[0]));
@@ -40,7 +40,6 @@ public class GetConfigCommand implements Command {
 		return COMMAND_SYNTAX;
 	}
 
-	@Override
 	public String help() {
 		return new String(String.format("%-10s", COMMAND_SYNTAX)
 				+ "  -  Prints the value of given configuration property.");

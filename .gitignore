@@ -13,5 +13,9 @@ hs_err_pid*
 
 logs
 target
+*.log
+
+# eclipse files
 .classpath
 .project
+.settings

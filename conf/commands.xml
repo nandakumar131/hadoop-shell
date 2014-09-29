@@ -54,6 +54,12 @@
 		<class>com.ericsson.hadoop.shell.command.EchoCommand</class>
 		<description>Display a line of text</description>
 	</command>
+	
+	<command>
+		<name>df</name>
+		<class>com.ericsson.hadoop.shell.command.DFCommand</class>
+		<description>Display a line of text</description>
+	</command>
 
 	<!--command>
 		<name>getConfig</name>

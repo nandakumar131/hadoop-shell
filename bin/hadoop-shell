@@ -1,0 +1,30 @@
+#!/bin/bash
+
+#HADOOP_HOME="/opt/hadoop"
+
+if [ -z $HADOOP_HOME ]
+then
+        echo "HADOOP_HOME is not set"
+        exit 1;
+fi
+
+programLocation="$0"
+
+while [ -h "$programLocation" ]; do
+	ls=`ls -ld "$programLocation"`
+	link=`expr "$ls" : '.*-> \(.*\)$'`
+	if expr "$link" : '/.*' > /dev/null; then
+		programLocation="$link"
+	else
+		programLocation="`dirname "$programLocation"`/$link"
+	fi
+done
+
+HADOOP_SHELL_BIN_LOCATION=`dirname $programLocation`
+HADOOP_SHELL_HOME="$HADOOP_SHELL_BIN_LOCATION/.." 
+HADOOP_SHELL_LOG_DIR="$HADOOP_SHELL_HOME/logs"
+
+HADOOP_SHELL_CLASSPATH=$HADOOP_SHELL_HOME/lib/hadoop-shell-0.1.jar:$HADOOP_SHELL_HOME/conf:$HADOOP_HOME/*:$HADOOP_HOME/lib/*:$HADOOP_HOME/conf
+HADOOP_SHELL_OPTS="$HADOOP_SHELL_OPTS -Dhshell.log.dir=$HADOOP_SHELL_LOG_DIR"
+
+java $HADOOP_SHELL_OPTS -cp $HADOOP_SHELL_CLASSPATH com.ericsson.hadoop.shell.HShell

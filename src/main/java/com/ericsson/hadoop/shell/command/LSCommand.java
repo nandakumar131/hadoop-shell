@@ -10,30 +10,32 @@ import jline.Completor;
 import jline.MultiCompletor;
 import jline.SimpleCompletor;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.shell.PathData;
 
 import com.ericsson.hadoop.shell.completor.HDFSFileNameCompletor;
 import com.ericsson.hadoop.shell.controller.MyConsole;
-import com.ericsson.hadoop.shell.environment.HShellEnv;
+import com.ericsson.hadoop.shell.exception.CommandExecutionException;
 import com.ericsson.hadoop.shell.filesystem.HDFS;
 import com.ericsson.hadoop.shell.util.ExitCode;
 import com.ericsson.hadoop.shell.util.HDFSPath;
 
-public class LSCommand implements Command {
+public class LSCommand extends AbstractHDFSCommand {
 
 	public static final String NAME = "ls";
 
-	private final String COMMAND_SYNTAX = "ls [option] <file>";
+	private static final String COMMAND_SYNTAX = "ls [option] <file>";
+
+	private static final Log LOG = LogFactory.getLog(LSCommand.class);
 
 	private static final String HYPHEN = "-";
 	private static final String OPT_LONG_LISTING = "l";
 	private static final String OPT_RECURSIVE = "R";
 	private static final String OPT_DIR_LIST = "d";
 	private static final String OPT_HUMAN_REDABLE = "h";
-
-	private static final HShellEnv env = HShellEnv.getInstance();
 
 	private List<String> paths = new ArrayList<String>();
 
@@ -42,11 +44,10 @@ public class LSCommand implements Command {
 	private boolean dirList;
 	private boolean humanReadable;
 
-	@Override
-	public int execute(String... arguments) {
-		int exitCode = ExitCode.SUCCESS;
-		parseArguments(arguments);
+	public int execute(String... arguments) throws CommandExecutionException {
 		try {
+			int exitCode = ExitCode.SUCCESS;
+			parseArguments(arguments);
 			for (String path : paths) {
 				String absolutePath = HDFSPath.getAbsolutePath(path);
 				try {
@@ -57,7 +58,7 @@ public class LSCommand implements Command {
 					}
 					for (PathData item : items) {
 						if ((paths.size() > 1 || items.length > 1)
-								&& HDFS.getFileSystem().isDirectory(item.path)) {
+								&& hdfs.isDirectory(item.path)) {
 							System.out.println();
 							System.out.println(item.path.toUri().getPath()
 									+ ":");
@@ -74,17 +75,18 @@ public class LSCommand implements Command {
 
 					}
 				} catch (FileNotFoundException | IllegalArgumentException e) {
-					// TODO: log exception message
+					LOG.error("Exception while executing '" + NAME + "' command",
+							e);
 					exitCode = ExitCode.ERROR;
 					printNoSuchFileORDir(absolutePath);
 				}
 			}
+			resetFlags();
+			return exitCode;
 		} catch (Exception e) {
-			exitCode = ExitCode.ERROR;
-			e.printStackTrace();
+			throw new CommandExecutionException(e);
 		}
-		resetFlags();
-		return exitCode;
+
 	}
 
 	private void parseArguments(String[] arguments) {
@@ -149,8 +151,7 @@ public class LSCommand implements Command {
 
 	private void listFiles(Path path) throws IOException {
 		List<String> listOfFiles = new ArrayList<String>();
-		FileStatus[] hdfsFileSystemFiles = HDFS.getFileSystem()
-				.listStatus(path);
+		FileStatus[] hdfsFileSystemFiles = hdfs.listStatus(path);
 
 		for (int i = 0; i < hdfsFileSystemFiles.length; i++) {
 			String name = hdfsFileSystemFiles[i].getPath().toUri().getPath()
@@ -199,7 +200,6 @@ public class LSCommand implements Command {
 		System.err.println("ls: " + fileName + " : No such file or directory");
 	}
 
-	@Override
 	public String help() {
 		return new String(String.format("%-10s", COMMAND_SYNTAX)
 				+ "  -  List directory contents");

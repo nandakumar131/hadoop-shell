@@ -7,6 +7,8 @@ import java.util.List;
 
 import jline.Completor;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -16,16 +18,10 @@ import com.ericsson.hadoop.shell.filesystem.HDFS;
 
 public class HDFSDirNameCompletor implements Completor {
 
-	private static FileSystem hdfs;
+	private static FileSystem hdfs = HDFS.getFileSystem();
 	private static final HShellEnv env = HShellEnv.getInstance();
-
-	public HDFSDirNameCompletor() {
-		try {
-			hdfs = FileSystem.get(HDFS.getConfig());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+	
+	private static final Log LOG = LogFactory.getLog(HDFSDirNameCompletor.class);
 
 	@SuppressWarnings("rawtypes")
 	public int complete(final String buf, final int cursor,
@@ -85,6 +81,7 @@ public class HDFSDirNameCompletor implements Completor {
 			sortFileNames(candidates);
 			return returnValue;
 		} catch (IOException e) {
+			LOG.error("Exception while accessing HDFS filesystem ", e);
 			return -1;
 		}
 	}
@@ -121,7 +118,7 @@ public class HDFSDirNameCompletor implements Completor {
 	private void addCurrentAndParentDir(String buffer, List candidates)
 			throws IOException {
 
-		//TODO: Use constant for current and parent dir, and use file seperator
+		// TODO: Use constant for current and parent dir, and use file seperator
 		String parentDir;
 		String currentValue;
 

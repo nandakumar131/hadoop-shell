@@ -1,21 +1,18 @@
 package com.ericsson.hadoop.shell.command;
 
-import com.ericsson.hadoop.shell.environment.HShellEnv;
-import com.ericsson.hadoop.shell.util.ExitCode;
-
 import jline.Completor;
 import jline.NullCompletor;
 
-public class EchoCommand implements Command {
+import com.ericsson.hadoop.shell.exception.CommandExecutionException;
+import com.ericsson.hadoop.shell.util.ExitCode;
+
+public class EchoCommand extends AbstractHDFSCommand {
 
 	public static final String NAME = "echo";
 
 	private final String COMMAND_SYNTAX = "echo <string>";
 
-	private static final HShellEnv env = HShellEnv.getInstance();
-
-	@Override
-	public int execute(String... arguments) {
+	public int execute(String... arguments) throws CommandExecutionException {
 		StringBuffer stringBuffer = new StringBuffer();
 		for (String argument : arguments) {
 			stringBuffer.append(getValue(argument));
@@ -41,7 +38,6 @@ public class EchoCommand implements Command {
 		return new NullCompletor();
 	}
 
-	@Override
 	public String help() {
 		return new String(String.format("%-10s", COMMAND_SYNTAX)
 				+ "-  Display a line of text");

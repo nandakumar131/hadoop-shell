@@ -21,9 +21,7 @@ public class MyConsole {
 	public static ConsoleReader getConsole() throws IOException {
 
 		getMyConsoleReader();
-
 		return myConsole;
-
 	}
 
 	private static ConsoleReader getMyConsoleReader() throws IOException {

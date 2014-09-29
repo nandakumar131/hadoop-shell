@@ -15,34 +15,34 @@ import org.apache.avro.Schema;
 import org.apache.avro.file.DataFileReader;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
-import org.apache.hadoop.fs.FileSystem;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.fs.Path;
 
 import com.ericsson.hadoop.shell.completor.HDFSFileNameCompletor;
+import com.ericsson.hadoop.shell.exception.CommandExecutionException;
 import com.ericsson.hadoop.shell.file.FileType;
 import com.ericsson.hadoop.shell.file.avro.AvroHelper;
 import com.ericsson.hadoop.shell.filesystem.HDFS;
 import com.ericsson.hadoop.shell.util.ExitCode;
 import com.ericsson.hadoop.shell.util.HDFSPath;
 
-public class CatCommand implements Command {
+public class CatCommand extends AbstractHDFSCommand {
 
 	public static final String NAME = "cat";
 
 	private static final String HYPHEN = "-";
 	private static final String OPT_LINE_NUMBER = "n";
+	private static final String COMMAND_SYNTAX = "cat <file>";
 
-	private final String COMMAND_SYNTAX = "cat <file>";
-
-	private static FileSystem hdfs = HDFS.getFileSystem();
+	private static final Log LOG = LogFactory.getLog(CatCommand.class);
 
 	private String fileName;
 	private boolean printLineNumber;
 
-	@Override
-	public int execute(String... arguments) {
-		int exitCode = ExitCode.SUCCESS;
+	public int execute(String... arguments) throws CommandExecutionException {
 		try {
+			int exitCode = ExitCode.SUCCESS;
 			parseArguments(arguments);
 			if (fileName != null) {
 				String absolutePath = HDFSPath.getAbsolutePath(fileName);
@@ -55,10 +55,13 @@ public class CatCommand implements Command {
 									absolutePath.lastIndexOf('.') + 1,
 									absolutePath.length()).trim();
 						} catch (Exception ex) {
+							LOG.debug("No extension found for the file "
+									+ absolutePath + ", using default decoder.");
 							// File doesn't have any extension, do nothing.
 						}
 
 						if (fileExtension.equals(FileType.AVRO)) {
+							LOG.info("File type: AVRO, Using AVRO decode to print the file.");
 							printAvroFile(absolutePath, printLineNumber);
 
 						} else {
@@ -66,26 +69,26 @@ public class CatCommand implements Command {
 						}
 					} else {
 						exitCode = ExitCode.ERROR;
+						LOG.error(fileName + ": is a directory");
 						System.err.println(NAME + ": " + fileName
 								+ ": Is a directory");
 					}
 				} else {
 					exitCode = ExitCode.ERROR;
+					LOG.error(fileName + " : no such file or directory");
 					System.err.println(NAME + ": " + fileName
 							+ ": No such file or directory");
 				}
 			} else {
 				exitCode = ExitCode.ERROR;
+				LOG.error("Wrong number of arguments.");
 				System.err.println("Wrong number of arguments.");
 			}
-
+			resetFlags();
+			return exitCode;
 		} catch (Exception e) {
-			// TODO: do logging and remove p.printStackTrace()
-			e.printStackTrace();
-			exitCode = ExitCode.ERROR;
+			throw new CommandExecutionException(e);
 		}
-		resetFlags();
-		return exitCode;
 	}
 
 	private void parseArguments(String[] arguments) {
@@ -160,7 +163,6 @@ public class CatCommand implements Command {
 		return options;
 	}
 
-	@Override
 	public String help() {
 		return new String(String.format("%-10s", COMMAND_SYNTAX)
 				+ "  -  concatenate files and print on the standard output");

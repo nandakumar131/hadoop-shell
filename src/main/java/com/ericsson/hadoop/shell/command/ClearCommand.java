@@ -1,5 +1,6 @@
 package com.ericsson.hadoop.shell.command;
 
+import com.ericsson.hadoop.shell.exception.CommandExecutionException;
 import com.ericsson.hadoop.shell.util.ExitCode;
 
 import jline.Completor;
@@ -11,8 +12,7 @@ public class ClearCommand implements Command {
 
 	private final String COMMAND_SYNTAX = "clear";
 
-	@Override
-	public int execute(String... arguments) {
+	public int execute(String... arguments) throws CommandExecutionException {
 		System.out.print("\033[H\033[2J");
 		System.out.flush();
 		/*
@@ -26,7 +26,6 @@ public class ClearCommand implements Command {
 		return new NullCompletor();
 	}
 
-	@Override
 	public String help() {
 		return new String(String.format("%-10s", COMMAND_SYNTAX)
 				+ "-  Clears the console");

@@ -6,8 +6,12 @@ import java.util.List;
 import jline.Completor;
 import jline.SimpleCompletor;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ericsson.hadoop.shell.controller.CommandFactory;
 import com.ericsson.hadoop.shell.controller.CommandUtil;
+import com.ericsson.hadoop.shell.exception.CommandExecutionException;
 import com.ericsson.hadoop.shell.util.ExitCode;
 
 public class HelpCommand implements Command {
@@ -16,10 +20,11 @@ public class HelpCommand implements Command {
 
 	private final String COMMAND_SYNTAX = "help";
 
+	private static final Log LOG = LogFactory.getLog(HelpCommand.class);
+
 	private CommandFactory commandFactory = new CommandFactory();
 
-	@Override
-	public int execute(String... arguments) {
+	public int execute(String... arguments) throws CommandExecutionException {
 		int exitCode = ExitCode.SUCCESS;
 		if (arguments.length == 0) {
 			listCommands();
@@ -29,8 +34,10 @@ public class HelpCommand implements Command {
 			if (commandHelp != null) {
 				System.out.println(commandHelp);
 			} else {
+
 				exitCode = ExitCode.ERROR;
 				System.out.println("No help found for " + commandName + ".");
+				LOG.warn("No help found for " + commandName + ".");
 			}
 		}
 		return exitCode;
@@ -60,7 +67,6 @@ public class HelpCommand implements Command {
 				new String[0]));
 	}
 
-	@Override
 	public String help() {
 		return new String(String.format("%-10s", COMMAND_SYNTAX)
 				+ "-  Prints the help message");

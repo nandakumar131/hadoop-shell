@@ -7,6 +7,8 @@ import java.util.List;
 
 import jline.Completor;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -16,16 +18,11 @@ import com.ericsson.hadoop.shell.filesystem.HDFS;
 
 public class HDFSFileNameCompletor implements Completor {
 
-	private static FileSystem hdfs;
+	private static FileSystem hdfs = HDFS.getFileSystem();
 	private static final HShellEnv env = HShellEnv.getInstance();
+	
+	private static final Log LOG = LogFactory.getLog(HDFSFileNameCompletor.class);
 
-	public HDFSFileNameCompletor() {
-		try {
-			hdfs = FileSystem.get(HDFS.getConfig());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
 
 	@SuppressWarnings("rawtypes")
 	public int complete(final String buf, final int cursor,
@@ -84,6 +81,7 @@ public class HDFSFileNameCompletor implements Completor {
 			sortFileNames(candidates);
 			return returnValue;
 		} catch (IOException e) {
+			LOG.error("Exception while accessing HDFS filesystem ", e);
 			return -1;
 		}
 	}

@@ -5,59 +5,52 @@ import java.io.IOException;
 
 import jline.Completor;
 
-import org.apache.hadoop.fs.FileSystem;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.fs.Path;
 
 import com.ericsson.hadoop.shell.completor.HDFSDirNameCompletor;
-import com.ericsson.hadoop.shell.environment.HShellEnv;
-import com.ericsson.hadoop.shell.filesystem.HDFS;
+import com.ericsson.hadoop.shell.exception.CommandExecutionException;
 import com.ericsson.hadoop.shell.util.ExitCode;
 import com.ericsson.hadoop.shell.util.HDFSPath;
 
-public class CDCommand implements Command {
+public class CDCommand extends AbstractHDFSCommand {
 
 	public static final String NAME = "cd";
 
-	private final String COMMAND_SYNTAX = "cd <directory>";
+	private static final String COMMAND_SYNTAX = "cd <directory>";
 
-	private static FileSystem hdfs;
-	private static HShellEnv env;
+	private static final Log LOG = LogFactory.getLog(CDCommand.class);
 
-	public CDCommand() {
+	public int execute(String... arguments) throws CommandExecutionException {
 		try {
-			hdfs = FileSystem.get(HDFS.getConfig());
-			env = HShellEnv.getInstance();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	public int execute(String... arguments) {
-		int exitCode = ExitCode.SUCCESS;
-		try {
+			int exitCode = ExitCode.SUCCESS;
 			String dir = getDir(arguments);
 			String location = HDFSPath.getAbsolutePath(dir);
 			Path path = new Path(location);
-			if (hdfs.exists(path)) {
-				if (hdfs.isDirectory(path)) {
-					location = path.toString() + File.separator;
-					env.setPWD(new Path(location).toString());
+			try {
+				if (hdfs.exists(path)) {
+					if (hdfs.isDirectory(path)) {
+						location = path.toString() + File.separator;
+						env.setPWD(new Path(location).toString());
+					} else {
+						exitCode = ExitCode.ERROR;
+						LOG.error(dir + " Not a direcotry.");
+						System.err.println("cd: " + dir + ": Not a directory");
+					}
 				} else {
 					exitCode = ExitCode.ERROR;
-					System.err.println("cd: " + dir + ": Not a directory");
+					LOG.error(dir + " No such file or direcotry.");
+					System.err.println("cd: " + dir
+							+ ": No such file or directory");
 				}
-			} else {
-				exitCode = ExitCode.ERROR;
-				System.err
-						.println("cd: " + dir + ": No such file or directory");
+			} catch (IllegalArgumentException iae) {
+				env.setPWD(File.separator);
 			}
-		} catch (IllegalArgumentException iae) {
-			env.setPWD(File.separator);
-		} catch (Exception e) {
-			e.printStackTrace();
+			return exitCode;
+		} catch (IOException e) {
+			throw new CommandExecutionException(e);
 		}
-		return exitCode;
 	}
 
 	private String getDir(String[] arguments) {
@@ -82,7 +75,6 @@ public class CDCommand implements Command {
 		return new HDFSDirNameCompletor();
 	}
 
-	@Override
 	public String help() {
 		return new String(String.format("%-10s", COMMAND_SYNTAX)
 				+ "  -  Change directory");

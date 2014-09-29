@@ -7,14 +7,20 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FsShell;
 import org.apache.hadoop.util.ToolRunner;
 
+import com.ericsson.hadoop.shell.util.ExitCode;
+
 public class HDFS {
 
 	private final static String HSHELL_SITE_FILE = "/hshell-site.xml";
+
+	private static final Log LOG = LogFactory.getLog(HDFS.class);
 
 	private static Configuration conf;
 	private static FileSystem fileSystem;
@@ -26,11 +32,12 @@ public class HDFS {
 			conf.addResource(new FileInputStream(getHShellSiteFile()));
 			fileSystem = FileSystem.get(conf);
 		} catch (FileNotFoundException fne) {
-			// TODO: log warning
+			LOG.error(HSHELL_SITE_FILE + " file not found!", fne);
 		} catch (NullPointerException npe) {
-			// TODO: log warning
+			LOG.error("Exception while loading configuration", npe);
 		} catch (IOException ioe) {
-			ioe.printStackTrace();
+			LOG.error("Exception while loading" + HSHELL_SITE_FILE + " file");
+			System.exit(ExitCode.ERROR);
 		}
 		hdfsShell = new FsShell(conf);
 	}
@@ -38,6 +45,16 @@ public class HDFS {
 	private static String getHShellSiteFile() {
 		URL hshellSiteFileURL = HDFS.class.getResource(HSHELL_SITE_FILE);
 		return hshellSiteFileURL == null ? null : hshellSiteFileURL.getPath();
+	}
+
+	public static boolean isRunning() {
+		try {
+			fileSystem.getStatus();
+		} catch (IOException e) {
+			LOG.error("Exception while accessing hadoop filesystem.", e);
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -66,6 +83,10 @@ public class HDFS {
 
 	public static FileSystem getFileSystem() {
 		return fileSystem;
+	}
+
+	public static void close() throws IOException {
+		fileSystem.close();
 	}
 
 }

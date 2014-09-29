@@ -1,9 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-	<property> 
+	<!--property>
 		<name>fs.default.name</name>
-		<value>127.0.0.1:9000</value> 
+		<value>hdfs://HADOOP_CLUSTER</value>
 	</property>
+	<property>
+		<name>dfs.nameservices</name>
+		<value>HADOOP_CLUSTER</value>
+	</property>
+	<property>
+		<name>dfs.ha.namenodes.HADOOP_CLUSTER</name>
+		<value>namenode1,namenode2</value>
+	</property>
+	<property>
+		<name>dfs.client.failover.proxy.provider.HADOOP_CLUSTER</name>
+		<value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider
+		</value>
+	</property>
+	<property>
+		<name>dfs.namenode.rpc-address.HADOOP_CLUSTER.namenode1</name>
+		<value></value>
+	</property>
+	<property>
+		<name>dfs.namenode.rpc-address.HADOOP_CLUSTER.namenode2</name>
+		<value></value>
+	</property>
+
+	<property>
+		<name>hadoop.socks.server</name>
+		<value></value>
+	</property>
+	<property>
+		<name>hadoop.rpc.socket.factory.class.default</name>
+		<value>org.apache.hadoop.net.SocksSocketFactory</value>
+	</property-->
 	<property>
 		<name>dfs.client.use.legacy.blockreader</name>
 		<value>true</value>

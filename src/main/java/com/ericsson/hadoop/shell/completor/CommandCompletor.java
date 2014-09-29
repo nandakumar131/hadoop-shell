@@ -9,10 +9,15 @@ import jline.ArgumentCompletor;
 import jline.Completor;
 import jline.SimpleCompletor;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ericsson.hadoop.shell.command.Command;
 import com.ericsson.hadoop.shell.controller.CommandUtil;
 
 public class CommandCompletor {
+
+	public static final Log LOG = LogFactory.getLog(CommandCompletor.class);
 
 	private static final String COMPLETOR_METHOD = "getCompletor";
 
@@ -28,8 +33,11 @@ public class CommandCompletor {
 					(Object[]) null);
 		} catch (Exception e) {
 			// There is no completor for this command, so do nothing.
+			LOG.debug("No completor defined for " + command + "command.");
 		}
 		if (commandCompletor != null) {
+			LOG.debug("Adding " + commandCompletor + " completor for " + command
+					+ " command.");
 			completors.add(commandCompletor);
 		}
 		return new ArgumentCompletor(completors);

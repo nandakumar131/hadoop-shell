@@ -1,9 +1,13 @@
 package com.ericsson.hadoop.shell.command;
 
-import com.ericsson.hadoop.shell.util.ExitCode;
-
 import jline.Completor;
 import jline.NullCompletor;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ericsson.hadoop.shell.exception.CommandExecutionException;
+import com.ericsson.hadoop.shell.util.ExitCode;
 
 public class ExitCommand implements Command {
 
@@ -11,9 +15,11 @@ public class ExitCommand implements Command {
 
 	private final String COMMAND_SYNTAX = "exit";
 
-	@Override
-	public int execute(String... arguments) {
-		System.exit(0);
+	private static final Log LOG = LogFactory.getLog(ExitCommand.class);
+
+	public int execute(String... arguments) throws CommandExecutionException {
+		LOG.info("Exiting Hadoop-Shell.");
+		System.exit(ExitCode.SUCCESS);
 		return ExitCode.SUCCESS;
 	}
 
@@ -26,7 +32,6 @@ public class ExitCommand implements Command {
 		return COMMAND_SYNTAX;
 	}
 
-	@Override
 	public String help() {
 		return new String(String.format("%-10s", COMMAND_SYNTAX)
 				+ "-  Exit from shell");
